@@ -3,5 +3,5 @@
  * Contoh: https://script.google.com/macros/s/AKfycbxxxxxxxxxxxxxxxx/exec
  */
 window.APP_CONFIG = {
-  API_URL: "PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE"
+  API_URL: "https://script.google.com/macros/s/AKfycbwoaLfM6IiOEKRP43HFvz1k-65XlJ2hdLIDSwd3f9ToTrNarJFjEtaF5FJlhpRCQNCH/exec"
 };
