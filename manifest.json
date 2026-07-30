@@ -1,0 +1,21 @@
+{
+  "name": "AEON Price Card Check",
+  "short_name": "Price Card",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f7f3f7",
+  "theme_color": "#b6005b",
+  "description": "Pengecekan price card dengan approval PIC, AGL, dan GL.",
+  "icons": [
+    {
+      "src": "assets/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

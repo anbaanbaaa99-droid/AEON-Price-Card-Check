@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#b6005b" />
+  <meta name="description" content="Aplikasi pengecekan price card dengan approval PIC, AGL, dan GL." />
+  <title>AEON Price Card Check</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="assets/icon-192.png" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="background-orb orb-one"></div>
+  <div class="background-orb orb-two"></div>
+
+  <section id="loginView" class="auth-page">
+    <div class="auth-shell">
+      <div class="brand-panel">
+        <div class="brand-mark">
+          <span class="brand-a">A</span>
+          <span class="brand-dot"></span>
+        </div>
+        <p class="eyebrow">STORE OPERATION TOOL</p>
+        <h1>Price Card<br />Check</h1>
+        <p class="brand-copy">
+          Pengecekan price card yang cepat, rapi, dan dapat dipertanggungjawabkan.
+        </p>
+        <div class="trust-list">
+          <div><span>✓</span> Approval PIC → AGL → GL</div>
+          <div><span>✓</span> Foto dan lokasi sebagai bukti</div>
+          <div><span>✓</span> Riwayat dan audit trail otomatis</div>
+        </div>
+      </div>
+
+      <form id="loginForm" class="auth-card">
+        <div class="mobile-brand">AEON <span>Price Card Check</span></div>
+        <p class="eyebrow pink">SELAMAT DATANG</p>
+        <h2>Masuk ke aplikasi</h2>
+        <p class="muted">Gunakan ID karyawan dan PIN yang terdaftar.</p>
+
+        <label class="field">
+          <span>ID Karyawan</span>
+          <input id="loginUserId" name="userId" autocomplete="username" placeholder="Contoh: PIC001" required />
+        </label>
+
+        <label class="field">
+          <span>PIN</span>
+          <div class="input-with-button">
+            <input id="loginPin" name="pin" type="password" inputmode="numeric" maxlength="6"
+              autocomplete="current-password" placeholder="6 digit PIN" required />
+            <button id="togglePin" type="button" class="icon-button" aria-label="Tampilkan PIN">👁</button>
+          </div>
+        </label>
+
+        <button id="loginButton" class="primary-button full" type="submit">
+          <span>Masuk</span>
+          <span class="button-arrow">→</span>
+        </button>
+
+        <div class="login-note">
+          <strong>Akun demo setelah setup:</strong><br />
+          PIC001 / AGL001 / GL001 — PIN 123456
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <section id="appView" class="app hidden">
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="sidebar-logo">A</div>
+        <div>
+          <strong>AEON</strong>
+          <span>Price Card Check</span>
+        </div>
+      </div>
+
+      <nav class="nav-list" aria-label="Navigasi utama">
+        <button class="nav-item active" data-page="dashboardPage">
+          <span class="nav-icon">⌂</span><span>Dashboard</span>
+        </button>
+        <button class="nav-item" data-page="inputPage" data-role-visible="PIC">
+          <span class="nav-icon">＋</span><span>Input Pengecekan</span>
+        </button>
+        <button class="nav-item" data-page="approvalPage" data-role-visible="AGL,GL">
+          <span class="nav-icon">✓</span><span>Persetujuan</span>
+          <span id="approvalBadge" class="badge hidden">0</span>
+        </button>
+        <button class="nav-item" data-page="historyPage">
+          <span class="nav-icon">≡</span><span>Riwayat</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div id="userAvatar" class="avatar">U</div>
+        <div class="sidebar-user">
+          <strong id="sidebarUserName">User</strong>
+          <span id="sidebarUserRole">Role</span>
+        </div>
+        <button id="logoutButton" class="icon-button light" title="Keluar">↗</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <button id="mobileMenuButton" class="mobile-menu-button" aria-label="Buka menu">☰</button>
+        <div>
+          <p id="pageEyebrow" class="eyebrow pink">OVERVIEW</p>
+          <h2 id="pageTitle">Dashboard</h2>
+        </div>
+        <div class="topbar-actions">
+          <div class="live-clock">
+            <span id="currentDate">-</span>
+            <strong id="currentTime">-</strong>
+          </div>
+          <button id="refreshButton" class="secondary-button">↻ Segarkan</button>
+        </div>
+      </header>
+
+      <div class="content">
+        <section id="dashboardPage" class="page active">
+          <div class="hero-card">
+            <div>
+              <span id="heroRole" class="role-chip">PIC</span>
+              <h3 id="heroGreeting">Selamat bekerja!</h3>
+              <p>Pengecekan yang konsisten membantu pelanggan menemukan harga yang benar.</p>
+            </div>
+            <div class="hero-illustration" aria-hidden="true">
+              <div class="price-card-mini">
+                <span>PRICE</span>
+                <strong>Rp 24.900</strong>
+                <small>✓ CHECKED</small>
+              </div>
+              <div class="scan-line"></div>
+            </div>
+          </div>
+
+          <div class="stat-grid">
+            <article class="stat-card">
+              <div class="stat-icon magenta">▣</div>
+              <div><span>Pengecekan Hari Ini</span><strong id="statToday">0</strong></div>
+            </article>
+            <article class="stat-card">
+              <div class="stat-icon amber">◷</div>
+              <div><span>Menunggu Approval</span><strong id="statPending">0</strong></div>
+            </article>
+            <article class="stat-card">
+              <div class="stat-icon green">✓</div>
+              <div><span>Selesai</span><strong id="statApproved">0</strong></div>
+            </article>
+            <article class="stat-card">
+              <div class="stat-icon red">!</div>
+              <div><span>Ada Temuan</span><strong id="statFindings">0</strong></div>
+            </article>
+          </div>
+
+          <div class="dashboard-grid">
+            <article class="panel">
+              <div class="panel-heading">
+                <div>
+                  <p class="eyebrow pink">AKTIVITAS</p>
+                  <h3>Pengecekan terbaru</h3>
+                </div>
+                <button class="text-button" data-go-page="historyPage">Lihat semua →</button>
+              </div>
+              <div id="recentChecks" class="activity-list empty-state">
+                Belum ada data pengecekan.
+              </div>
+            </article>
+
+            <article class="panel proof-panel">
+              <p class="eyebrow pink">BUKTI DIGITAL</p>
+              <h3>Lebih kuat dari gambar TTD</h3>
+              <div class="proof-step"><span>1</span><div><strong>Akun personal</strong><small>Identitas PIC, AGL, dan GL tercatat.</small></div></div>
+              <div class="proof-step"><span>2</span><div><strong>Konfirmasi PIN</strong><small>PIN diminta kembali saat submit atau approval.</small></div></div>
+              <div class="proof-step"><span>3</span><div><strong>Audit trail</strong><small>Waktu server, perangkat, foto, dan lokasi tersimpan.</small></div></div>
+            </article>
+          </div>
+        </section>
+
+        <section id="inputPage" class="page">
+          <div class="form-layout">
+            <form id="checkForm" class="panel form-panel">
+              <div class="panel-heading">
+                <div>
+                  <p class="eyebrow pink">FORM PEKERJAAN</p>
+                  <h3>Input pengecekan price card</h3>
+                </div>
+                <span class="required-note">* Wajib diisi</span>
+              </div>
+
+              <div class="form-grid two-columns">
+                <label class="field">
+                  <span>Tanggal *</span>
+                  <input id="checkDate" type="date" required />
+                </label>
+                <label class="field">
+                  <span>Jam *</span>
+                  <input id="checkTime" type="time" required />
+                </label>
+              </div>
+
+              <label class="field">
+                <span>Gondola / Area yang Dicek *</span>
+                <select id="gondolaSelect" required>
+                  <option value="">Pilih gondola</option>
+                </select>
+              </label>
+
+              <label class="field">
+                <span>Check By</span>
+                <input id="checkBy" readonly />
+              </label>
+
+              <label class="field">
+                <span>Hasil Pengecekan *</span>
+                <div class="segmented-control">
+                  <label><input type="radio" name="resultStatus" value="Sesuai" checked /><span>✓ Sesuai</span></label>
+                  <label><input type="radio" name="resultStatus" value="Ada Temuan" /><span>! Ada Temuan</span></label>
+                  <label><input type="radio" name="resultStatus" value="Perlu Perbaikan" /><span>↻ Perlu Perbaikan</span></label>
+                </div>
+              </label>
+
+              <label class="field">
+                <span>Keterangan *</span>
+                <textarea id="description" rows="4" maxlength="1000"
+                  placeholder="Contoh: Seluruh price card sesuai dengan produk. Price card promo sudah terpasang." required></textarea>
+                <small><span id="descriptionCount">0</span>/1000 karakter</small>
+              </label>
+
+              <div class="upload-location-grid">
+                <label class="upload-box" for="evidenceInput">
+                  <input id="evidenceInput" type="file" accept="image/*" capture="environment" hidden />
+                  <div id="uploadPlaceholder">
+                    <span class="upload-icon">⌁</span>
+                    <strong>Tambah foto bukti</strong>
+                    <small>JPG/PNG, maksimal 1,5 MB</small>
+                  </div>
+                  <img id="evidencePreview" class="hidden" alt="Preview foto bukti" />
+                </label>
+
+                <div class="location-box">
+                  <span class="location-icon">⌖</span>
+                  <strong>Lokasi pengecekan</strong>
+                  <small id="locationText">Belum diambil</small>
+                  <button id="getLocationButton" type="button" class="secondary-button small">Ambil lokasi</button>
+                </div>
+              </div>
+
+              <div class="approval-confirmation">
+                <div>
+                  <strong>Konfirmasi sebagai PIC</strong>
+                  <p>Submit ini berfungsi sebagai persetujuan digital PIC.</p>
+                </div>
+                <label class="field compact">
+                  <span>Masukkan PIN *</span>
+                  <input id="submitPin" type="password" inputmode="numeric" maxlength="6"
+                    placeholder="6 digit PIN" required />
+                </label>
+              </div>
+
+              <button id="submitCheckButton" class="primary-button full" type="submit">
+                Simpan & Ajukan ke AGL
+              </button>
+            </form>
+
+            <aside class="side-info">
+              <article class="panel checklist-card">
+                <p class="eyebrow pink">CHECKLIST CEPAT</p>
+                <h3>Sebelum submit</h3>
+                <label><input type="checkbox" /> Price card sesuai produk</label>
+                <label><input type="checkbox" /> Harga terbaca jelas</label>
+                <label><input type="checkbox" /> Promo masih berlaku</label>
+                <label><input type="checkbox" /> Tidak ada label rusak</label>
+              </article>
+              <article class="tip-card">
+                <strong>💡 Tips</strong>
+                <p>Ambil foto yang menampilkan produk dan price card dalam satu frame agar mudah diverifikasi.</p>
+              </article>
+            </aside>
+          </div>
+        </section>
+
+        <section id="approvalPage" class="page">
+          <div class="panel">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow pink">WORKFLOW</p>
+                <h3>Antrean persetujuan</h3>
+              </div>
+              <span id="approvalRoleHint" class="status-pill neutral">-</span>
+            </div>
+            <div id="approvalList" class="record-grid empty-state">
+              Tidak ada data yang menunggu persetujuan.
+            </div>
+          </div>
+        </section>
+
+        <section id="historyPage" class="page">
+          <div class="panel">
+            <div class="panel-heading history-heading">
+              <div>
+                <p class="eyebrow pink">ARSIP</p>
+                <h3>Riwayat pengecekan</h3>
+              </div>
+              <div class="history-actions">
+                <input id="historySearch" class="search-input" placeholder="Cari gondola, PIC, atau status..." />
+                <select id="historyStatusFilter" class="filter-select">
+                  <option value="">Semua status</option>
+                  <option value="Menunggu AGL">Menunggu AGL</option>
+                  <option value="Menunggu GL">Menunggu GL</option>
+                  <option value="Selesai">Selesai</option>
+                  <option value="Ditolak">Ditolak</option>
+                </select>
+                <button id="exportCsvButton" class="secondary-button">⇩ Export CSV</button>
+              </div>
+            </div>
+
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Tanggal/Jam</th>
+                    <th>Gondola</th>
+                    <th>Check By</th>
+                    <th>Hasil</th>
+                    <th>Approval</th>
+                    <th>Bukti</th>
+                    <th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="historyTableBody">
+                  <tr><td colspan="7" class="empty-cell">Belum ada data.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </section>
+
+  <div id="approvalModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="approvalModalTitle">
+    <div class="modal-card">
+      <button id="closeApprovalModal" class="modal-close" aria-label="Tutup">×</button>
+      <p class="eyebrow pink">KONFIRMASI</p>
+      <h3 id="approvalModalTitle">Persetujuan Digital</h3>
+      <div id="approvalSummary" class="approval-summary"></div>
+      <label class="field">
+        <span>Catatan Verifikasi</span>
+        <textarea id="approvalNote" rows="3" maxlength="500" placeholder="Opsional untuk approval, wajib untuk penolakan."></textarea>
+      </label>
+      <label class="field">
+        <span>PIN Anda *</span>
+        <input id="approvalPin" type="password" inputmode="numeric" maxlength="6" placeholder="6 digit PIN" />
+      </label>
+      <div class="modal-actions">
+        <button id="rejectButton" class="danger-button">Tolak</button>
+        <button id="approveButton" class="primary-button">Setujui</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="detailModal" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-card large">
+      <button id="closeDetailModal" class="modal-close" aria-label="Tutup">×</button>
+      <p class="eyebrow pink">DETAIL PENGECEKAN</p>
+      <div id="detailContent"></div>
+    </div>
+  </div>
+
+  <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+  <div id="loadingOverlay" class="loading-overlay hidden">
+    <div class="spinner"></div>
+    <span>Memproses...</span>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
