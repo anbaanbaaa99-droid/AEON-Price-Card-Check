@@ -310,11 +310,63 @@
   }
 
   function formatDateTime(date, time) {
-    if (!date) return "-";
-    const parsed = new Date(`${date}T${time || "00:00"}:00`);
-    const d = new Intl.DateTimeFormat("id-ID", { day: "2-digit", month: "short", year: "numeric" }).format(parsed);
-    return `${d} • ${time || "-"}`;
+  if (!date) return "-";
+
+  let dateText = String(date).trim();
+  let timeText = String(time || "00:00").trim();
+
+  // Menangani format Indonesia: 31/07/2026
+  const formatIndonesia = dateText.match(
+    /^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/
+  );
+
+  if (formatIndonesia) {
+    const day = String(formatIndonesia[1]).padStart(2, "0");
+    const month = String(formatIndonesia[2]).padStart(2, "0");
+    const year = formatIndonesia[3];
+
+    dateText = `${year}-${month}-${day}`;
   }
+
+  // Validasi format yyyy-mm-dd
+  const formatDatabase = dateText.match(
+    /^(\d{4})-(\d{1,2})-(\d{1,2})$/
+  );
+
+  if (!formatDatabase) {
+    return `${date} • ${time || "-"}`;
+  }
+
+  // Menangani jam 00:40 atau 00:40:00
+  const formatJam = timeText.match(/^(\d{1,2}):(\d{2})/);
+
+  if (formatJam) {
+    const hour = String(formatJam[1]).padStart(2, "0");
+    const minute = formatJam[2];
+
+    timeText = `${hour}:${minute}`;
+  } else {
+    timeText = "00:00";
+  }
+
+  const parsed = new Date(
+    `${dateText}T${timeText}:00+07:00`
+  );
+
+  // Jangan biarkan tampilan berhenti apabila tanggal tidak valid
+  if (Number.isNaN(parsed.getTime())) {
+    return `${date} • ${time || "-"}`;
+  }
+
+  const formattedDate = new Intl.DateTimeFormat("id-ID", {
+    timeZone: "Asia/Jakarta",
+    day: "2-digit",
+    month: "short",
+    year: "numeric"
+  }).format(parsed);
+
+  return `${formattedDate} • ${timeText}`;
+}
 
   function statusClass(status) {
     if (/selesai|disetujui/i.test(status)) return "success";
